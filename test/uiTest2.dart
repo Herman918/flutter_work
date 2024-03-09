@@ -1,0 +1,52 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_work/main.dart';
+import 'package:flutter_work/redux/store.dart';
+import 'package:flutter_work/ui/BookDetailPage.dart';
+import 'package:flutter_work/ui/search_result_widget.dart';
+import 'package:http/http.dart' as http;
+import 'package:mockito/mockito.dart';
+
+
+import 'package:flutter_work/models/document.dart';
+
+class MockClient extends Mock implements http.Client {}
+
+void main() {
+  testWidgets('Navigation test', (WidgetTester tester) async {
+
+    final mockClient = MockClient();
+
+    final fakeDocument = Document(
+      titleSuggest: 'Book 1',
+      authorName: ['Author 1'],
+      firstPublishYear: 2020,
+      publisher: ['Publisher 1'],
+      language: ['English'],
+    );
+
+    await tester.pumpWidget(DictionaryApp(store: store,));
+
+    await tester.tap(find.text('SEARCH'));
+
+    final fakeResponse = http.Response(json.encode({
+      "start": 0,
+      "numFound": 1,
+      "docs": [fakeDocument.toJson()]
+    }), 200);
+
+    when(mockClient.get(Uri.parse('https://api.example.com/books')))
+        .thenAnswer((_) async => fakeResponse);
+
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byWidgetPredicate(
+            (widget) => widget is SearchResultWidget && widget.document == fakeDocument));
+
+    await tester.pumpAndSettle();
+
+    expect(find.byType(BookDetailPage), findsOneWidget);
+  });
+}

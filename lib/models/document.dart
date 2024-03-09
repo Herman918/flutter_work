@@ -12,7 +12,7 @@ class Document {
   @JsonKey(name:'edition_key')
   final List<String> editionKey;
   @JsonKey(name:'cover_i')
-  final int coverId;
+  final int? coverId;
   final List<String> isbn;
   @JsonKey(name:'has_fulltext')
   final bool hasFulltext;

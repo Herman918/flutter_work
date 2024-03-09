@@ -50,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
   _MyHomePageState();
 
   String currentText = "";
+  String logMessage = '';
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Container(
             padding: EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 4.0),
             child: TextField(
+              key: Key('textFieldKey'),
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: 'Search for Books...',
@@ -92,12 +94,16 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 print('Button SEARCH pressed');
                 widget.store.dispatch(DoSearch(currentText));
+                setState(() {
+                  logMessage = 'Button SEARCH pressed';
+                });
               },
               child: Text(
                   "SEARCH"
               ),
             ),
           ),
+          Text(logMessage),
           StoreConnector<AppState, _SearchScreenViewModel>(
             converter: (store) {
               print('Converter called');
